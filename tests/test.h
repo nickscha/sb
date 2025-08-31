@@ -115,10 +115,7 @@ TEST_API TEST_INLINE void test_print_int(int val)
 
 #else
 
-#ifndef _UNISTD_H
-extern int write(int fd, void *buf, unsigned int count);
-#define STDOUT_FILENO 1
-#endif /* _UNISTD_H */
+#include <unistd.h>
 
 #define COLOR_DEFAULT 0
 #define COLOR_BLUE 0
