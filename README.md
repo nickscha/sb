@@ -26,7 +26,7 @@ For more information please look at the "sb.h" file or take a look at the "examp
 - **nostdlib** — no dependency on the C Standard Library  
 - **Minimal binary size** — optimized for small executables  
 - **Cross-platform** — Works on all Platforms
-- **Strict compilation** — built with aggressive warnings & safety checks  
+- **Strict compilation** — built with aggressive warnings & safety checks (detect buffer overflow via `sb.ovr`)  
 
 ## Quick Start
 
@@ -81,6 +81,25 @@ Output will be:
 double: '  -3.1416'
  float: '   0.1234'
 ```
+
+## Function Reference
+
+| Function                       | Signature                                                                           | Description                                                                       | Return                       |
+| ------------------------------ | ----------------------------------------------------------------------------------- | --------------------------------------------------------------------------------- | ---------------------------- |
+| Initialize SB                  | `void sb_init(sb *sb, char *buffer, int capacity)`                                  | Initialize string builder with a buffer.                                          | –                            |
+| Terminate SB                   | `void sb_term(sb *sb)`                                                              | Null-terminate buffer, set overflow if needed.                                    | –                            |
+| Append character               | `void sb_putc(sb *sb, char c)`                                                      | Append single character.                                                          | –                            |
+| Append bytes                   | `void sb_append_bytes(sb *sb, char *src, int len)`                                  | Append `len` bytes from a buffer.                                                 | –                            |
+| Append C string                | `int sb_append_cstr(sb *sb, char *s)`                                               | Append null-terminated string.                                                    | Number of bytes appended     |
+| Append spaces                  | `void sb_append_spaces(sb *sb, int count)`                                          | Append `count` space characters.                                                  | –                            |
+| Append unsigned long           | `int sb_append_ulong(sb *sb, unsigned long v, int width, sb_pad_mode pad)`          | Append unsigned integer with optional width and padding.                          | Number of characters written |
+| Append signed long             | `int sb_append_long(sb *sb, long v, int width, sb_pad_mode pad)`                    | Append signed integer with optional width and padding.                            | Number of characters written |
+| Append float                   | `int sb_append_float(sb *sb, float x, int width, int precision, sb_pad_mode pad)`   | Append floating-point number with precision and optional padding.                 | Number of characters written |
+| Append double                  | `int sb_append_double(sb *sb, double x, int width, int precision, sb_pad_mode pad)` | Append double with precision and optional padding.                                | Number of characters written |
+| Compare SB to string           | `int sb_cmp(const sb *sb, const char *s)`                                           | Compare SB content to a C string. Returns 0 if equal, <0 if sb < s, >0 if sb > s. | Comparison result            |
+| Compare SB to string (up to n) | `int sb_ncmp(const sb *sb, const char *s, int n)`                                   | Compare SB content to first `n` chars of a C string.                              | Comparison result            |
+
+---
 
 ## Run Example: nostdlib, freestsanding
 

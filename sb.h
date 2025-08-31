@@ -32,18 +32,18 @@ LICENSE
 
 typedef struct sb
 {
-  char *buf;
-  int cap;
-  int len;
-  int ovr;
+  char *buf; /* Pointer to string buffer */
+  int cap;   /* Capacity of buffer */
+  int len;   /* Current length of content */
+  int ovr;   /* Overflow flag (1 if exceeded capacity) */
 
 } sb;
 
 typedef enum sb_pad_mode
 {
-  SB_PAD_NONE = 0,
-  SB_PAD_LEFT,
-  SB_PAD_RIGHT
+  SB_PAD_NONE = 0, /* No padding (default) */
+  SB_PAD_LEFT,     /* Pad on the left */
+  SB_PAD_RIGHT     /* Pad on the right */
 
 } sb_pad_mode;
 
