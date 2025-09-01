@@ -204,10 +204,8 @@ SB_API SB_INLINE int sb_count_digits_ulong(unsigned long v)
 SB_API SB_INLINE int sb_append_ulong_direct(sb *sb, unsigned long v)
 {
   char pair[2];
-  unsigned long div = 1ul;
+  int digits;
   int written = 0;
-  int i;
-  int first_pair = 1; /* skip leading zero */
 
   if (v == 0ul)
   {
@@ -215,54 +213,51 @@ SB_API SB_INLINE int sb_append_ulong_direct(sb *sb, unsigned long v)
     return 1;
   }
 
-  while (v / div >= 100ul)
+  digits = sb_count_digits_ulong(v);
+
+  /* If number of digits is odd, write the leading single digit. */
+  if (digits & 1)
   {
-    if (div > (0xFFFFFFFFul / 100ul))
-    {
-      break;
-    }
+    int leading;
+    unsigned long pow_lead;
 
-    div *= 100ul;
-  }
-
-  while (div >= 100ul)
-  {
-    unsigned long q = v / div;
-    unsigned int idx = (unsigned int)q * 2u;
-    pair[0] = SB_LUT_DIGITS_2[idx];
-    pair[1] = SB_LUT_DIGITS_2[idx + 1];
-
-    if (first_pair && pair[0] == '0')
-    {
-      sb_putc(sb, pair[1]);
-    }
-    else
-    {
-      sb_append_bytes(sb, pair, 2);
-    }
-
-    first_pair = 0;
-
-    written += 2;
-    v -= q * div;
-    div /= 100ul;
-  }
-
-  if (v < 10ul)
-  {
-    sb_putc(sb, (char)('0' + (int)v));
-
+    pow_lead = sb_pow10u(digits - 1);
+    leading = (int)(v / pow_lead);
+    sb_putc(sb, (char)('0' + leading));
+    v -= (unsigned long)leading * pow_lead;
     written += 1;
+    digits -= 1; /* now even */
   }
-  else
+
+  if (digits > 0)
   {
-    i = (int)v;
-    pair[0] = SB_LUT_DIGITS_2[i * 2];
-    pair[1] = SB_LUT_DIGITS_2[i * 2 + 1];
+    unsigned long div;
 
-    sb_append_bytes(sb, pair, 2);
+    div = sb_pow10u(digits - 2);
 
-    written += 2;
+    while (digits > 0)
+    {
+      unsigned long q = v / div; /* 0..99 */
+      unsigned int idx = (unsigned int)q * 2u;
+      pair[0] = SB_LUT_DIGITS_2[idx];
+      pair[1] = SB_LUT_DIGITS_2[idx + 1];
+
+      sb_append_bytes(sb, pair, 2);
+
+      written += 2;
+      v -= q * div;
+
+      digits -= 2;
+
+      if (div >= 100ul)
+      {
+        div /= 100ul;
+      }
+      else
+      {
+        break;
+      }
+    }
   }
 
   return written;

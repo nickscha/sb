@@ -124,6 +124,10 @@ void sb_test_padding_and_format(void)
   sb_append_long(&sb, 123, 8, SB_PAD_NONE);
   sb_append_cstr(&sb, "'\n");
 
+  sb_append_cstr(&sb, " ulong: '");
+  sb_append_ulong(&sb, 400, 8, SB_PAD_NONE);
+  sb_append_cstr(&sb, "'\n");
+
   sb_append_cstr(&sb, "  left: '");
   sb_append_long(&sb, 123, 8, SB_PAD_RIGHT);
   sb_append_cstr(&sb, "'\n");
