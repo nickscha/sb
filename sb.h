@@ -183,6 +183,33 @@ SB_API SB_INLINE void sb_append_spaces(sb *sb, int count)
   }
 }
 
+SB_API SB_INLINE int sb_append_cstr_padded(sb *sb, char *s, int width, sb_pad_mode pad)
+{
+  int n = 0;
+
+  /* count string length */
+  while (s[n] != '\0')
+  {
+    n++;
+  }
+
+  /* calculate padding */
+  if (pad == SB_PAD_LEFT && width > n)
+  {
+    sb_append_spaces(sb, width - n);
+  }
+
+  /* append string */
+  sb_append_bytes(sb, s, n);
+
+  if (pad == SB_PAD_RIGHT && width > n)
+  {
+    sb_append_spaces(sb, width - n);
+  }
+
+  return (width > n) ? width : n;
+}
+
 SB_API SB_INLINE int sb_count_digits_ulong(unsigned long v)
 {
   int d = 0;
@@ -503,6 +530,153 @@ SB_API SB_INLINE int sb_ncmp(sb *sb, char *s, int n)
   }
 
   return 0;
+}
+
+/* #############################################################################
+ * # PRINTF like implementation
+ * #############################################################################
+ */
+SB_API SB_INLINE void sb_printf(sb *s, char *fmt, void **args, int argc)
+{
+  int arg_idx = 0;
+  char *p = fmt;
+
+  if (argc <= 0)
+  {
+    return;
+  }
+
+  while (*p)
+  {
+    if (*p == '%' && *(p + 1))
+    {
+      int width = 0;
+      int precision = -1;
+      sb_pad_mode pad = SB_PAD_NONE;
+
+      ++p; /* skip '%' */
+
+      /* check left-pad flag */
+      if (*p == '-')
+      {
+        pad = SB_PAD_LEFT;
+        ++p;
+      }
+
+      /* parse width */
+      while (*p >= '0' && *p <= '9')
+      {
+        width = width * 10 + (*p - '0');
+        ++p;
+      }
+
+      if (width > 0 && pad == SB_PAD_NONE)
+      {
+        pad = SB_PAD_RIGHT;
+      }
+
+      /* parse precision */
+      if (*p == '.')
+      {
+        ++p;
+        precision = 0;
+
+        while (*p >= '0' && *p <= '9')
+        {
+          precision = precision * 10 + (*p - '0');
+          ++p;
+        }
+      }
+
+      switch (*p)
+      {
+      case 's':
+        sb_append_cstr_padded(s, (char *)args[arg_idx], width, pad);
+        break;
+      case 'd':
+        sb_append_long(s, *((long *)args[arg_idx]), width, pad);
+        break;
+      case 'u':
+        sb_append_ulong(s, *((unsigned long *)args[arg_idx]), width, pad);
+        break;
+      case 'f':
+        sb_append_double(s, *((double *)args[arg_idx]), width, (precision < 0 ? 6 : precision), pad);
+        break;
+      case 'c':
+        sb_putc(s, *((char *)args[arg_idx]));
+        break;
+      default:
+        sb_putc(s, '%');
+        sb_putc(s, *p);
+        break;
+      }
+
+      arg_idx++;
+    }
+    else
+    {
+      sb_putc(s, *p);
+    }
+
+    p++;
+  }
+}
+
+SB_API SB_INLINE void sb_printf1(sb *s, char *fmt, char *a1)
+{
+  void *args[1];
+  args[0] = a1;
+  sb_printf(s, fmt, args, 1);
+}
+
+SB_API SB_INLINE void sb_printf2(sb *s, char *fmt, char *a1, char *a2)
+{
+  void *args[2];
+  args[0] = a1;
+  args[1] = a2;
+  sb_printf(s, fmt, args, 2);
+}
+
+SB_API SB_INLINE void sb_printf3(sb *s, char *fmt, char *a1, char *a2, char *a3)
+{
+  void *args[3];
+  args[0] = a1;
+  args[1] = a2;
+  args[2] = a3;
+  sb_printf(s, fmt, args, 3);
+}
+
+SB_API SB_INLINE void sb_printf4(sb *s, char *fmt, char *a1, char *a2, char *a3, char *a4)
+{
+  void *args[4];
+  args[0] = a1;
+  args[1] = a2;
+  args[2] = a3;
+  args[3] = a4;
+  sb_printf(s, fmt, args, 4);
+}
+
+SB_API SB_INLINE void sb_printf5(sb *s, char *fmt, char *a1, char *a2, char *a3, char *a4, char *a5)
+{
+  void *args[5];
+  args[0] = a1;
+  args[1] = a2;
+  args[2] = a3;
+  args[3] = a4;
+  args[4] = a5;
+  sb_printf(s, fmt, args, 5);
+}
+
+SB_API SB_INLINE void sb_printf6(sb *s, char *fmt, char *a1, char *a2, char *a3, char *a4, char *a5, char *a6)
+{
+  void *args[6];
+  args[0] = a1;
+  args[1] = a2;
+  args[2] = a3;
+  args[3] = a4;
+  args[4] = a5;
+  args[5] = a6;
+  sb_printf(s, fmt, args, 6);
 }
 
 #endif /* SB_H */

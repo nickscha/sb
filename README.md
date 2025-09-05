@@ -99,6 +99,16 @@ double: '  -3.1416'
 | Compare SB to string           | `int sb_cmp(const sb *sb, const char *s)`                                           | Compare SB content to a C string. Returns 0 if equal, <0 if sb < s, >0 if sb > s. | Comparison result            |
 | Compare SB to string (up to n) | `int sb_ncmp(const sb *sb, const char *s, int n)`                                   | Compare SB content to first `n` chars of a C string.                              | Comparison result            |
 
+### Notes on `sb_printf`
+- **Supported format specifiers:**  
+  `%s` (string), `%d` (signed int), `%u` (unsigned int), `%f` (float/double), `%c` (char)
+- **Width & padding:**  
+  - `%5d` → right-padded  
+  - `%-5d` → left-padded  
+- **Precision:**  
+  - `%.2f` → 2 digits after decimal
+- Up to **6 arguments** supported (`sb_printf1` → `sb_printf6`).
+
 ---
 
 ## Run Example: nostdlib, freestsanding

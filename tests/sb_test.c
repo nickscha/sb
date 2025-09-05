@@ -10,10 +10,9 @@ LICENSE
   See end of file for detailed license information.
 
 */
-#include "../sb.h" /* String Builder */
-
-#include "test.h" /* Simple Testing framework    */
-#include "perf.h" /* Simple Performance profiler */
+#include "../sb.h"        /* String Builder             */
+#include "../deps/test.h" /* Simple Testing framework    */
+#include "../deps/perf.h" /* Simple Performance profiler */
 
 void sb_test_init_term(void)
 {
@@ -148,6 +147,32 @@ void sb_test_padding_and_format(void)
 
   test_print_string(sb.buf);
 }
+void sb_test_printf(void)
+{
+  long score = 42;
+  double pi = 3.14159;
+
+  char buf[256];
+  sb s;
+  sb_init(&s, buf, sizeof(buf));
+  sb_printf3(&s, "\"Name: %10s Score: %10d PI: %20.4f\"\n", "Foo", (char *)&score, (char *)&pi);
+  sb_term(&s);
+
+  test_print_string(s.buf);
+  assert(sb_cmp(&s, "\"Name: Foo        Score: 42         PI: 3.1416              \"\n") == 0);
+
+  sb_init(&s, buf, sizeof(buf));
+  sb_printf3(&s, "\"Name: %-10s Score: %-10d PI: %-20.4f\"\n", "Foo", (char *)&score, (char *)&pi);
+  sb_term(&s);
+
+  assert(sb_cmp(&s, "\"Name:        Foo Score:         42 PI:               3.1416\"\n") == 0);
+
+  sb_init(&s, buf, sizeof(buf));
+  sb_printf3(&s, "\"Name: %-10s Score: %-10d PI: %-.4f\"\n", "Foo", (char *)&score, (char *)&pi);
+  sb_term(&s);
+
+  assert(sb_cmp(&s, "\"Name:        Foo Score:         42 PI: 3.1416\"\n") == 0);
+}
 
 int main(void)
 {
@@ -158,6 +183,9 @@ int main(void)
   sb_test_append_ulong_long();
   sb_test_append_double_float();
   sb_test_padding_and_format();
+  sb_test_printf();
+
+  test_print_string("[sb] passed all tests");
 
   return 0;
 }
