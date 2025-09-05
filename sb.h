@@ -679,6 +679,33 @@ SB_API SB_INLINE void sb_printf6(sb *s, char *fmt, char *a1, char *a2, char *a3,
   sb_printf(s, fmt, args, 6);
 }
 
+SB_API SB_INLINE void sb_printf7(sb *s, char *fmt, char *a1, char *a2, char *a3, char *a4, char *a5, char *a6, char *a7)
+{
+  void *args[7];
+  args[0] = a1;
+  args[1] = a2;
+  args[2] = a3;
+  args[3] = a4;
+  args[4] = a5;
+  args[5] = a6;
+  args[6] = a7;
+  sb_printf(s, fmt, args, 7);
+}
+
+SB_API SB_INLINE void sb_printf8(sb *s, char *fmt, char *a1, char *a2, char *a3, char *a4, char *a5, char *a6, char *a7, char *a8)
+{
+  void *args[8];
+  args[0] = a1;
+  args[1] = a2;
+  args[2] = a3;
+  args[3] = a4;
+  args[4] = a5;
+  args[5] = a6;
+  args[6] = a7;
+  args[7] = a8;
+  sb_printf(s, fmt, args, 8);
+}
+
 #endif /* SB_H */
 
 /*

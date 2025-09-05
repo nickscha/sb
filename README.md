@@ -107,7 +107,7 @@ double: '  -3.1416'
   - `%-5d` → left-padded  
 - **Precision:**  
   - `%.2f` → 2 digits after decimal
-- Up to **6 arguments** supported (`sb_printf1` → `sb_printf6`).
+- Up to **8 arguments** supported (`sb_printf1` → `sb_printf8`).
 
 ---
 
