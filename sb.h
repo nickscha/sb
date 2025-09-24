@@ -18,17 +18,15 @@ LICENSE
 /* Check if using C99 or later (inline is supported) */
 #if __STDC_VERSION__ >= 199901L
 #define SB_INLINE inline
-#define SB_API static
 #elif defined(__GNUC__) || defined(__clang__)
 #define SB_INLINE __inline__
-#define SB_API static
 #elif defined(_MSC_VER)
 #define SB_INLINE __inline
-#define SB_API static
 #else
 #define SB_INLINE
-#define SB_API static
 #endif
+
+#define SB_API static
 
 typedef struct sb
 {
